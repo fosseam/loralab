@@ -1,0 +1,13 @@
+---
+title: "LoRaWAN – Messen und Testen"
+author: "Dein Name"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    fontsize: 11pt
+    geometry: margin=2.5cm
+    papersize: a4
+    linkcolor: blue
+lang: de
+---

@@ -1,0 +1,325 @@
+---
+title: "SotA - LoRaWAN Messen & Testen"
+author: "Detlef Burkhardt"
+format:
+  pdf:
+    toc: false
+    include-in-header: headings.tex
+    number-sections: false
+    fontsize: 11pt
+    geometry: margin=2.5cm
+    mainfont: "Fira Sans Condensed"
+    papersize: a4
+    linkcolor: blue
+lang: de
+
+---
+
+![](https://lab.nrw/hedgedoc/uploads/ac182475-5d66-40d0-b86c-2e1bfa1665bf.png)
+
+\newpage
+
+# SotA LoRaWAN - Messen & Testen
+State-of-the-Art Werkzeuge, Metriken und Praxisbeispiele für das Messen und Testen von LoRaWAN-Netzen.
+
+
+
+```
+Title:   SotA LoRaWAN - Messen & Testen
+Type:    Working Paper
+License: CC-BY-NC-ND 4.0  
+Version: 0.4.2
+DOI:     10.5281/zenodo.15280695 (Version)
+         10.5281/zenodo.15279047 (Concept)
+Date:    April, 2025 
+```
+
+Author   Detlef Burkhardt https://orcid.org/0009-0000-9155-716X  
+DOI-Link https://doi.org/10.5281/zenodo.15279047  
+
+ 
+## Abstract
+
+Dieses Paper bietet einen kompakten Überblick über Methoden und Geräte zur Messung von LoRaWAN-Netzen. Es behandelt zentrale Metriken wie RSSI, SNR, Spreading Factor und Paketverlust und vergleicht portable Messgeräte vom DIY-Bereich bis zur Industrieklasse. Neben Anforderungen an Mess-Nodes werden praxisnahe Anwendungsbeispiele, Konfigurationstipps und Perspektiven für offene, wartungsarme Lösungen vorgestellt.
+
+\newpage
+
+## Inhaltsverzeichnis
+
+1. **Einleitung**  
+ 1.1 Ziel und Motivation  
+ 1.2 Messgrundlagen  
+  1.2.1 RSSI – Signalstärke  
+  1.2.2 SNR – Signal-Rausch-Verhältnis  
+  1.2.3 SF – Spreading Factor  
+  1.2.4 TX Power – Sendeleistung (dBm)  
+  1.2.5 RX Sensitivity – Empfangsschwelle  
+  1.2.6 GPS – Positionsdaten für Mapping  
+  1.2.7 ACK & Packet Loss – Zuverlässigkeit
+
+2. **Anforderungen an Mess-Nodes**  
+ 2.1 Technische Basisfunktionen (LoRaWAN, GPS, Power)  
+ 2.2 Bedienbarkeit & Konfiguration (Handy, Display, Konfiguration)  
+ 2.3 Visualisierung & Datenintegration (Map, App, Anzeige)  
+
+3. **Bewertung & Vergleich von Messgeräten**  
+ 3.1 Vergleichskriterien  
+ 3.2 Gerätekategorien im Überblick  
+ 3.3 Geräte im Detailvergleich – DIY-Klasse  
+  – TTGO T-Beam  
+  – Heltec Stick V3  
+  – RAK WisBlock  
+ 3.4 Geräte im Detailvergleich – Midrange-Klasse  
+  – RAK10706 Signal Meter  
+  – Dragino LGT-92  
+  – Moko LW001-BG Pro  
+  – SenseCAP S210x  
+ 3.5 Geräte im Detailvergleich – Industrie-Klasse  
+  – Adeunis Field Test Device  
+  – Kerlink Field Tester  
+  – Tektelic Kona Field Kit  
+ 3.6 Zielgruppen & Empfehlungen  
+  3.6.1 Entscheidungs-Matrix  
+  3.6.2 Empfehlungen nach Anwendungsfall  
+  3.6.3 Budget vs Komfort  
+  3.6.4 Fazit & hybride Lösungen  
+
+4. **Anwendungsfälle**  
+ 4.1 Netzplanung & Reichweitenanalyse  
+ 4.2 Innenraum- und Kellerabdeckung  
+ 4.3 Mobile Feldtests & Mapping  
+
+5. **Setup, Tools & Anleitungen**  
+ 5.1 Geräteeinrichtung & Konfigurationspfade  
+ 5.2 Flash- und Firmware-Anleitungen  
+ 5.3 TTN & Datenintegration  
+ 5.4 Gehäuse & Zubehör  
+ 5.5 Templates & Beispielkonfigurationen  
+ 5.6 End-to-End Beispiele & Use Cases  
+  5.6.1 Sensor → Gateway → TTN → Dashboard  
+  5.6.2 LoRaWAN Netzwerk verstehen & debuggen  
+  5.6.3 Reichweiten-Mapping mit TTN Mapper  
+  5.6.4 BLE-Logger + Offline-Upload (Bonus)
+
+6. **Ausblick & Weiterentwicklung**  
+ 6.1 Bedarf an offenen OOTB-Messgeräten <100 €  
+ 6.2 BLE-Logger, App-Anbindung & Smartphone-Integration  
+ 6.3 Ambient-Messgeräte & Energie-Harvesting  
+  6.3.1 Motivation: Wartungsarme Infrastruktur  
+  6.3.2 Energiequellen: Solar, RF, Thermo, Bewegung  
+  6.3.3 Beispiele & Prototypen  
+  6.3.4 Perspektiven: Passive Mapping via Infrastruktur  
+ 6.4 TTM-Mapper, Datacake & Tools der nächsten Generation  
+ 6.5 Dashboards & Community-Potenzial  
+ 6.5 Open Hardware & Community-Perspektiven  
+
+
+\newpage
+
+
+## 1. Einleitung
+
+### 1.1 Ziel & Motivation
+
+LoRaWAN ist beinahe ein Alleskönner. Es ermöglicht stromsparende Funkverbindungen über große Distanzen und eignet sich besonders für IoT-Anwendungen mit geringem Datenvolumen. Doch auch diese Technologie hat ihre Grenzen, zum Beispiel in stark abgeschirmten Innenräumen oder bei Anforderungen an hohe Datenraten und kurze Latenzen. Wer LoRaWAN in der Praxis nutzen will, sollte wissen, wo es glänzt – und wo andere Funkstandards unter Umständen besser geeignet sind.
+
+Messungen helfen dabei, diese Unterschiede sichtbar zu machen. Sie liefern die Grundlage für fundierte Entscheidungen: Wo reicht ein einzelnes Gateway? Wann ist ein Repeater sinnvoll?
+
+Wo ist die Reichweite eingeschränkt, obwohl die Signalstärke auf dem Papier gut aussieht? Besonders im urbanen Raum oder in Gebäuden führt oft erst eine reale Messung zu verlässlichen Erkenntnissen.
+
+Die Spannbreite möglicher Testszenarien ist groß. Sie reicht vom einfachen Kellertest mit einem TTGO-Gerät über Mapping-Fahrten mit GPS-Tracking bis hin zu systematischen Feldtests mit TTN Mapper oder eigenen Dashboards. Jedes dieser Szenarien stellt andere Anforderungen an Hardware, Software und Auswertung.
+
+Ziel dieses Papers ist es, diese Vielfalt abzubilden und praxisnahe Orientierung zu bieten, sowohl für Einsteigerinnen und Einsteiger, die mit DIY-Geräten arbeiten, als auch für Kommunen, Forschungsteams und Unternehmen, die professionellere Lösungen benötigen. Dabei geht es nicht nur ums Testen, sondern auch ums Verstehen: Wie funktioniert LoRaWAN unter realen Bedingungen, und was lässt sich daraus lernen?
+
+### 1.2 Messgrundlagen
+
+In diesem Abschnitt werden zentrale Messgrößen und ihre Bedeutung für LoRaWAN-Testungen erklärt. Sie bilden die Basis für jede fundierte Bewertung von Netzabdeckung, Zuverlässigkeit und Reichweite.
+
+#### 1.2.1 RSSI (Received Signal Strength Indicator)
+Der RSSI-Wert gibt die empfangene Signalstärke in dBm an. Er liefert eine grobe Einschätzung, ob ein Funksignal überhaupt erkannt wird, sagt jedoch wenig über die Qualität der Verbindung aus. Typische Werte liegen zwischen -30 dBm (sehr stark) und -120 dBm (kaum erkennbar).
+
+#### 1.2.2 SNR (Signal-to-Noise Ratio)
+Das Verhältnis zwischen Signal und Hintergrundrauschen wird in dB angegeben. Positive SNR-Werte sind ideal, Werte unter 0 dB deuten auf eine verrauschte Verbindung hin. SNR ist entscheidend für die Dekodierbarkeit von LoRa-Signalen.
+
+#### 1.2.3 Spreading Factor (SF)
+Der Spreading Factor beeinflusst Reichweite und Datenrate. Höhere SF-Werte erhöhen die Reichweite, aber verringern die Datenrate und erhöhen die Airtime. Typische Werte reichen von SF7 (schnell, aber kurzreichweitig) bis SF12 (langsam, aber weitreichend).
+
+#### 1.2.4 TX Power (Sendeleistung)
+Die Ausgangsleistung des Senders wird in dBm angegeben. Höhere TX-Werte können die Reichweite verbessern, erhöhen aber auch den Energieverbrauch. Die maximal zulässige Leistung ist gesetzlich begrenzt (z. B. +14 dBm in EU).
+
+#### 1.2.5 RX Sensitivity (Empfangsschwelle)
+Die Empfindlichkeit des Empfängers definiert, wie schwach ein Signal noch erkannt werden kann. Sie ist abhängig vom SF und anderen Parametern. Niedrige Sensitivitätswerte (z. B. -137 dBm) bedeuten hohe Empfangsstärke.
+
+#### 1.2.6 GPS (Global Positioning System)
+Für mobile Messungen ist GPS essentiell. Es erlaubt das Mapping von Empfangsdaten. Wichtig sind Genauigkeit, TTFF (Time to First Fix) und Konnektivität in schwierigen Umgebungen.
+
+#### 1.2.7 ACK & Packet Loss
+Die Erfolgsrate von Downlink-Bestätigungen (ACK) sowie verlorene Pakete geben Auskunft über die Zuverlässigkeit der Verbindung. Messungen über mehrere Zyklen liefern hier belastbare Aussagen.
+
+Diese Metriken ermöglichen gemeinsam eine umfassende Bewertung der Netzqualität und helfen, Probleme gezielt zu identifizieren.
+
+\newpage
+
+### 2. Anforderungen an Mess-Nodes
+
+Ein LoRaWAN-Messgerät ist kein beliebiges Endgerät, sondern ein spezielles Werkzeug, das sowohl technisch zuverlässig als auch praktisch nutzbar sein muss. Die Anforderungen hängen vom Einsatzzweck ab, vom einfachen Community-Test bis zur professionellen Netzvalidierung.
+
+#### 2.1 Technische Basisfunktionen
+
+Ein solches Gerät sollte eine Reihe technischer Mindestmerkmale erfüllen:
+
+- **LoRaWAN-Unterstützung**: Kompatibilität mit EU868 (ggf. weitere Bänder), OTAA/ABP, idealerweise Class A und Class C.
+- **GNSS / GPS**: Für Mapping essenziell, idealerweise mit schneller Fixzeit (TTFF), Unterstützung für Galileo, GLONASS oder BeiDou als Bonus.
+- **Stromversorgung**: Akkubetrieb mit Ladeoption über USB-C, optional Solarbetrieb oder Batterie-Backup.
+- **Sensorik & Logging**: Möglichkeit zur Datenspeicherung (SD-Karte, interner Speicher), evtl. BLE oder USB für Datenexport.
+- **Robustheit**: Gehäuse mit IP54 oder höher für Außeneinsatz.
+
+
+
+#### 2.1.1 LoRaWAN-Frequenzbänder weltweit
+
+| Region           | Frequenzband (MHz) | Bezeichnung | Bemerkungen                                                                       |
+| ---------------- | ------------------ | ----------- | --------------------------------------------------------------------------------- |
+| Europa           | 863–870            | EU868       | Standard in der EU; 8 Kanäle; RX2 bei 869.525 MHz                                 |
+| USA/Kanada       | 902–928            | US915       | 64 Uplink- und 8 Downlink-Kanäle; Sub-Band-Auswahl erforderlich                   |
+| Australien       | 915–928            | AU915       | Ähnlich wie US915; spezifische Sub-Band-Regelungen                                |
+| Asien            | 920–923            | AS923       | In mehreren asiatischen Ländern verwendet; Varianten mit LBT (Listen Before Talk) |
+| Indien           | 865–867            | IN865       | Speziell für Indien; eingeschränkte Kanalanzahl                                   |
+| China            | 470–510            | CN470       | Niedriges Frequenzband; 96 Uplink- und 48 Downlink-Kanäle                         |
+| Japan            | 920–928            | JP920       | Nutzung mit LBT; spezifische Vorschriften für maximale Sendeleistung              |
+| Russland         | 864–870            | RU864       | Ähnlich EU868; spezifische nationale Vorschriften                                 |
+| Korea            | 920–923            | KR920       | Ähnlich AS923; nationale Anpassungen                                              |
+| Europa (433 MHz) | 433.05–434.79      | EU433       | Weniger verbreitet; alternative Nutzung in bestimmten Anwendungen                 |
+
+##### 2.1.2 Optionale Zukunftsfähigkeit
+
+In einem zunehmend vielfältigen LPWAN-Umfeld wird Flexibilität immer wichtiger. Ein Messgerät ist besonders wertvoll, wenn es auch für andere Funk-Setups nutzbar ist:
+
+- **Meshtastic-kompatibel**: Möglichkeit zur Nutzung als Punkt-zu-Punkt-Gerät außerhalb von LoRaWAN-Netzen (zum Beispiel Peer-to-Peer Tracking, Chat etc.).
+- **Frequenzumschaltung**: Unterstützung mehrerer Bänder (zum Beispiel EU868, US915, AS923) für internationale oder experimentelle Nutzung.
+- **Privatnetze und TTN-kompatibel**: Umkonfiguration für TTN, Helium, Chirpstack oder proprietäre Netze.
+- **LPWAN-Awareness**: Auch wenn NB-IoT, LTE-M oder Sigfox meist andere Chips benötigen, kann ein Gerät zumindest passives Monitoring oder Vergleichs-Mapping unterstützen (zum Beispiel durch BLE-Kopplung mit LTE-M-Gerät).
+
+Ein Gerät, das diese technischen Grundlagen erfüllt und dabei auch anpassungsfähig für künftige Standards bleibt, bietet eine langfristige Investitionssicherheit, insbesondere für kommunale oder forschungsnahe Projekte.
+
+### 2.2 Bedienbarkeit & Konfiguration
+
+Ein gutes Messgerät muss nicht nur technisch fit sein, sondern auch einfach bedienbar und schnell konfigurierbar, sonst liegt es im Regal. Besonders wichtig:
+
+- Maker\:innen wollen basteln, brauchen aber Dokumentation.
+- Kommunen oder Bildung brauchen OotB Plug-and-Play.
+- Feldtests im Regen: große Buttons, klar ablesbare Anzeigen.
+
+#### 2.2.1 Setup und Konfigurierbarkeit
+
+- Verbindungsmöglichkeiten über USB, Bluetooth (BLE), serielles Terminal, Webinterface oder eine Smartphone-App
+- Nutzung von Konfigurationsprofilen (z. B. als JSON-Datei auf SD-Karte oder internem Speicher)
+- Einfacher Reset-Modus oder Setup-Button für schnelle Neuinitialisierung im Feld
+- Optionale Konfigurationssperren, um Fehlbedienung bei Community-Einsätzen zu vermeiden
+
+#### 2.2.2 Benutzerführung & Rückmeldung
+
+- Anzeigeelemente wie OLED, E-Ink oder mehrfarbige LEDs für SF, GPS, ACK, TX-Zustand etc.
+- Statusanzeige für Verbindungsaufbau, Fehlermeldungen und Energieversorgung
+- Physische Taster oder Touch-Flächen zur Steuerung von Logging, Markierung oder Neustart
+- Feedback per Ton, Licht oder Vibrationsimpuls, z. B. bei Empfangsverlust oder ACK
+
+#### 2.2.3 Praxisnahe Extras
+
+- Möglichkeit zum automatischen Start des Messbetriebs nach dem Einschalten („Zero-UX“) – ideal für einfache Nutzergruppen oder Massen-Deployments
+- Konfigurierbare Mess-Intervalle, z. B. zeitbasiert, triggerbasiert (Bewegung, GPS) oder manuell
+- Hinweise zur Outdoor-Tauglichkeit: Ablesbarkeit bei Sonnenlicht, Handschuhbedienung, Wetterschutz der Bedienelemente
+
+
+
+### 2.3 Visualisierung & Datenintegration
+
+Ein LoRaWAN-Messgerät ist nur so gut wie die Nutzbarkeit seiner Messdaten. Visualisierung, Zugriff und Integration sind entscheidend, um Reichweite, Zuverlässigkeit oder Störungen sinnvoll auszuwerten. Ob lokal auf dem Gerät, per Smartphone oder in der Cloud – die Daten sollten verständlich, portabel und analysierbar sein.
+
+#### 2.3.1 Darstellung auf dem Gerät
+
+- Anzeigen von Live-Werten wie RSSI, SNR, SF, TX Power
+- Symbole oder Farbcode für ACK, Fehlermeldungen, GPS-Fix
+- Trendanzeige oder Minilogik (z. B. RSSI-Peak, Signalverlust)
+- Scrollbare Screens oder seitenbasierte Anzeige
+
+#### 2.3.2 Zusammenspiel mit dem Handy
+
+1. **Verbindungsarten**
+   - Bluetooth (BLE) für Konfiguration und Live-Daten
+   - USB-OTG zur Datenübertragung oder direkter Terminal-Zugriff
+   - WLAN/Hotspot-Modus für Konfiguration via Webbrowser
+
+2. **Visualisierung auf dem Handy**
+   - Hersteller-Apps oder generische Tools wie „nRF Connect“, „Serial Bluetooth Terminal“
+   - Nutzung von Web-Dashboards (z. B. TTN Mapper, Datacake) im mobilen Browser
+   - Integration von BLE-Datenströmen in Logging-Apps
+
+3. **Smartphone als GUI / Erweiterung**
+   - Live-Streaming von Messdaten aufs Smartphone-Display
+   - Nutzung des Handys als GPS-Quelle oder Energieversorgung
+   - Kombination mit Sensor-Apps wie „Sensor2Go“ (RWTH Aachen) denkbar
+
+#### 2.3.3 Integration mit externen Systemen und Schnittstellen
+
+1. Anbindung an TTN, Helium, ChirpStack oder eigene Netzwerke
+2. Weiterleitung an Tools wie Datacake, Node-RED, Grafana, InfluxDB
+3. Export via CSV, JSON, GeoJSON, KML oder InfluxDB Line Protocol
+4. Mapping mit TTN Mapper, uMap oder QGIS
+5. Offene Protokolle: MQTT, HTTP, WebSocket, REST-API
+6. Nutzung von Webhooks und Low-Code-Plattformen wie n8n
+7. Offline-Datenspeicherung und synchronisierbarer Upload
+8. Wichtig: saubere Dokumentation der Datenstruktur und klar definierte Exportpfade
+
+#### 2.3.4 Datenzugriff & Speicherung
+
+1. Live-Datenübertragung („Online-Modus“), z. B. via LoRaWAN-Uplink oder BLE-Streaming
+2. Lokale Speicherung auf SD-Karte oder internem Speicher
+3. Export per USB, Bluetooth oder Weboberfläche
+4. Zeit- und GPS-Stempelung für nachträgliche Auswertung
+5. Backup-Möglichkeiten und Datenvalidierung (z. B. Checksummen, Auto-Restore)
+
+#### 2.3.5 Mapping & Analyse
+
+1. Kompatibilität mit Mapping-Tools wie TTN Mapper, uMap oder GPS Visualizer
+2. Erstellung von Heatmaps, Empfangsprofilen oder Coverage-Plots
+3. Import in Analyse-Umgebungen wie Jupyter, QGIS oder Python-Tools
+4. Vergleich von Messreihen über Zeit oder Standort hinweg
+5. OpenStreetMap-Integration für kontextbezogene Darstellung
+
+
+
+
+\newpage
+
+
+### 2.4 Messen in der Praxis
+
+#### Berlin:
+
+**Reichweitentest in Berliner Kanalschächten** (Projekt SENSARE)
+
+Im Projekt SENSARE wurden in Berlin umfangreiche Reichweitentests durchgeführt, um die Machbarkeit von LoRaWAN in Kanalschächten zu evaluieren. Dabei wurden mobile Gateways auf Gebäuden installiert und mit Feldtestern die Signalstärke an verschiedenen Sensorstandorten gemessen. Die Ergebnisse zeigten, dass Reichweiten von 400 bis 500 Metern realistisch sind, abhängig von Bebauung und Gateway-Höhe. 
+
+
+- [Projektseite SENSARE](https://sensare.infralab.berlin/der-grosse-lorawan-reichweitentest/)
+
+
+
+#### Wolfsburg:
+
+**LoRaWAN im Smart City-Projekt** (WOB.smart)
+
+In Wolfsburg wurden im Rahmen des Projekts WOB.smart Altglascontainer mit LoRaWAN-Sensoren ausgestattet, um deren Füllstände zu überwachen. Sechs Gateways wurden strategisch in der Stadt platziert, um eine große Reichweite und Ausfallsicherheit zu gewährleisten. Die Daten werden über eine offene Plattform bereitgestellt, was eine transparente und effiziente Entsorgung ermöglicht.
+
+- [Artikel zu WOB.smart](https://regionalheute.de/wolfsburg/zuhause-sehen-ob-der-altglascontainer-voll-ist/)
+
+
+
+#### Kaiserlautern:
+
+**Antennentests für Trinkwasseranlagen** (Projekt IoT.H2O)
+
+Das Projekt IoT.H2O untersuchte verschiedene Antennentypen hinsichtlich ihrer Eignung für den Einsatz in Trinkwasseranlagen. Dabei wurden sowohl kommerzielle als auch selbstgebaute Antennen getestet. Die Tests zeigten, dass bestimmte Antennen eine bessere Gebäudedurchdringung ermöglichen, was für Sensoren in Schächten oder Gebäuden entscheidend ist.
+
+- [Projektseite IoT.H2O](https://www.mv.uni-kl.de/IoTDotH2O/2020/09/18/lorawan-reichweitentests/)
